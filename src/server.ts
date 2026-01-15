@@ -8,6 +8,7 @@ import {
   validatorCompiler,
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
+import 'dotenv/config'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -35,9 +36,12 @@ app.register(ScalarApiReference, {
   routePrefix: '/docs'
 })
 
-app.listen({ port: 3000, host: '0.0.0.0' }).then(() => {
-  console.log('Server is running on http://localhost:3000')
-  console.log('Swagger docs available at http://localhost:3000/docs')
+app.listen({
+  port: Number(process.env.APP_PORT) || 3000,
+  host: '0.0.0.0'
+}).then(() => {
+  console.log(`Server is running on http://${process.env.APP_HOST}:${process.env.APP_PORT}`)
+  console.log(`Swagger docs available at http://${process.env.APP_HOST}:${process.env.APP_PORT}/docs`)
 })
 
 export default app

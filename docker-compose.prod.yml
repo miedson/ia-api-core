@@ -9,7 +9,7 @@ services:
     container_name: ia-api
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "3000:3000"
     environment:
       - NODE_ENV=production
     mem_limit: 700m
