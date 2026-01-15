@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  ia-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ia-api-core:latest
+    container_name: ia-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+    mem_limit: 700m
+    depends_on:
+      - qdrant
+
+  qdrant:
+    image: qdrant/qdrant
+    container_name: qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+volumes:
+  qdrant_data:
