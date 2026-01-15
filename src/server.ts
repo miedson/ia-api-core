@@ -9,7 +9,7 @@ import {
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
 import 'dotenv/config'
-import aiRoutes from "./routes/ai";
+import {aiRoutes} from "./routes/ai";
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 

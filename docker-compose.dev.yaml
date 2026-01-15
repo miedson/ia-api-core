@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   ia-api:
     image: node:20-alpine
@@ -15,7 +13,7 @@ services:
       pnpm run dev
       "
     ports:
-      - "8000:8000"
+      - "3000:3000"
     environment:
       - NODE_ENV=development
     mem_limit: 700m

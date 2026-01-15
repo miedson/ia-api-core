@@ -24,7 +24,7 @@ FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN pnpm run format || true
-RUN pnpm exec tsc
+RUN pnpm exec tsc && pnpm exec tsc-alias
 
 # ============================
 # Runtime (produção)

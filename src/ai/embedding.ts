@@ -1,12 +1,10 @@
-import { pipeline } from "@xenova/transformers";
-
-let embedder: any;
-
 export async function embed(text: string): Promise<number[]> {
-  if (!embedder) {
-    embedder = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
-  }
+  const res = await fetch("http://embedding:3001/embed", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text })
+  });
 
-  const out = await embedder(text, { pooling: "mean", normalize: true });
-  return Array.from(out.data);
+  const json: any = await res.json();
+  return json.vector;
 }

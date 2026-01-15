@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   ia-api:
     build:
@@ -15,6 +13,14 @@ services:
     mem_limit: 700m
     depends_on:
       - qdrant
+      - embedding
+
+  embedding:
+    build: ./embedding-service
+    container_name: embedding
+    volumes:
+    - hf_cache:/root/.cache/huggingface
+    mem_limit: 450m
 
   qdrant:
     image: qdrant/qdrant
