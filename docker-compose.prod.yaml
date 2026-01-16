@@ -19,7 +19,7 @@ services:
     build: ./embedding-service
     container_name: embedding
     volumes:
-    - hf_cache:/root/.cache/huggingface
+      - hf_cache:/tmp/hf_cache
     mem_limit: 450m
 
   qdrant:
@@ -33,3 +33,4 @@ services:
 
 volumes:
   qdrant_data:
+  hf_cache:
