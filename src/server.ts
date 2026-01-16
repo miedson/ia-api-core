@@ -10,6 +10,7 @@ import {
 } from 'fastify-type-provider-zod'
 import 'dotenv/config'
 import {aiRoutes} from "./routes/ai";
+import { apiRoutes } from './routes/api'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -38,6 +39,7 @@ app.register(ScalarApiReference, {
 })
 
 app.register(aiRoutes);
+app.register(apiRoutes);
 
 app.listen({
   port: Number(process.env.APP_PORT) || 3000,
