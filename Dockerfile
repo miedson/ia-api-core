@@ -18,23 +18,31 @@ COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile
 
 # ============================
+# Production dependencies
+# ============================
+FROM base AS deps-prod
+ENV NODE_ENV=production
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install --frozen-lockfile --prod
+
+# ============================
 # Build
 # ============================
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN pnpm run format || true
 RUN pnpm exec tsc && pnpm exec tsc-alias
 
 # ============================
 # Runtime (produção)
 # ============================
-FROM base AS runner
+FROM node:20-alpine AS runner
 ENV NODE_ENV=production
 WORKDIR /app
+RUN apk add --no-cache libc6-compat
 
 COPY --from=build /app/dist ./dist
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps-prod /app/node_modules ./node_modules
 COPY package.json ./
 
 EXPOSE 3000
