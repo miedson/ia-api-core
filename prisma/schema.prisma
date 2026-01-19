@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  @@map("users")
+  id        Int      @id @default(autoincrement())
+  public_id String   @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  organization Organization @relation(fields: [organizationId], references: [id])
+  organizationId Int @map("organization_id")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Organization {
+  @@map("organizations")
+  id        Int      @id @default(autoincrement())
+  publicId String    @map("public_id") @default(uuid())
+  name      String
+  document  String   @unique
+  users     User[]
+  slug      String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

@@ -29,3 +29,5 @@ coverage/
 .cache/
 models/
 onnx/
+
+/src/generated/prisma
