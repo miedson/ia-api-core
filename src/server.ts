@@ -38,7 +38,7 @@ app.register(ScalarApiReference, {
   routePrefix: '/docs'
 })
 
-app.register(aiRoutes);
+// app.register(aiRoutes);
 app.register(apiRoutes);
 
 app.listen({

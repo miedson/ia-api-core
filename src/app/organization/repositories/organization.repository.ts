@@ -7,7 +7,7 @@ import {
 export class OrganizationRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async create({ name, document }: OrganizationDto) {
+  async create({ name, document }: OrganizationDto): Promise<{organizationId: number}> {
     const data = organizationSchema.parse({ name, document });
     const organization = await this.prisma.organization.create({
       data: {
