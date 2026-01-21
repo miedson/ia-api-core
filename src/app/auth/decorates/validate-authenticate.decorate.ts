@@ -1,7 +1,7 @@
 import { FastifyJWT } from '@fastify/jwt'
 import { FastifyReply, FastifyRequest } from 'fastify'
 
-export const validateAuthenticate = async (
+export const validateAuthenticateDecorate = async (
   request: FastifyRequest,
   reply: FastifyReply,
 ) => {

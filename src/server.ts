@@ -11,7 +11,7 @@ import {
   validatorCompiler,
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
-import { validateAuthenticate } from './app/auth/decorates/validate-authenticate.decorate'
+import { validateAuthenticateDecorate } from './app/auth/decorates/validate-authenticate.decorate'
 import { routes } from './routes'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
@@ -56,7 +56,7 @@ app.register(ScalarApiReference, {
 
 routes.forEach((route) => app.register(route))
 
-app.decorate('authenticate', validateAuthenticate)
+app.decorate('authenticate', validateAuthenticateDecorate)
 
 app
   .listen({
