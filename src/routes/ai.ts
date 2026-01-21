@@ -4,7 +4,7 @@ import { chat } from '@/ai/chat'
 import { embed } from '@/ai/embedding'
 import { ensureCollection, qdrant } from '@/ai/qdrant'
 
-export async function aiRoutes (app: FastifyInstance) {
+export async function aiRoutes(app: FastifyInstance) {
   function collection(tenant: string) {
     return `tenant_${tenant.toLowerCase()}`
   }

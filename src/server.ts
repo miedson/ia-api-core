@@ -1,6 +1,9 @@
+import fCookie from '@fastify/cookie'
 import fastifyCors from '@fastify/cors'
+import fjtw from '@fastify/jwt'
 import fastifySwagger from '@fastify/swagger'
 import ScalarApiReference from '@scalar/fastify-api-reference'
+import 'dotenv/config'
 import { fastify } from 'fastify'
 import {
   jsonSchemaTransform,
@@ -8,9 +11,8 @@ import {
   validatorCompiler,
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
-import 'dotenv/config'
-import {aiRoutes} from "./routes/ai";
-import { apiRoutes } from './routes/api'
+import { validateAuthenticate } from './app/auth/decorates/validate-authenticate.decorate'
+import { routes } from './routes'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -20,7 +22,21 @@ app.setSerializerCompiler(serializerCompiler)
 app.register(fastifyCors, {
   origin: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  // credentials: true,
+  credentials: true,
+})
+
+app.register(fjtw, {
+  secret: process.env.JWT_SECRET || 'default-jwt-secret',
+})
+
+app.addHook('preHandler', (req, _, next) => {
+  req.jwt = app.jwt
+  return next()
+})
+
+app.register(fCookie, {
+  secret: process.env.COOKIE_SECRET || 'default-cookie-secret',
+  hook: 'preHandler',
 })
 
 app.register(fastifySwagger, {
@@ -35,18 +51,25 @@ app.register(fastifySwagger, {
 })
 
 app.register(ScalarApiReference, {
-  routePrefix: '/docs'
+  routePrefix: '/docs',
 })
 
-// app.register(aiRoutes);
-app.register(apiRoutes);
+routes.forEach((route) => app.register(route))
 
-app.listen({
-  port: Number(process.env.APP_PORT) || 3000,
-  host: '0.0.0.0'
-}).then(() => {
-  console.log(`Server is running on http://${process.env.APP_HOST}:${process.env.APP_PORT}`)
-  console.log(`Swagger docs available at http://${process.env.APP_HOST}:${process.env.APP_PORT}/docs`)
-})
+app.decorate('authenticate', validateAuthenticate)
+
+app
+  .listen({
+    port: Number(process.env.APP_PORT) || 3000,
+    host: '0.0.0.0',
+  })
+  .then(() => {
+    console.log(
+      `Server is running on http://${process.env.APP_HOST}:${process.env.APP_PORT}`,
+    )
+    console.log(
+      `Swagger docs available at http://${process.env.APP_HOST}:${process.env.APP_PORT}/docs`,
+    )
+  })
 
 export default app

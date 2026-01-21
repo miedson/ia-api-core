@@ -31,3 +31,4 @@ models/
 onnx/
 
 /src/generated/prisma
+dev.db

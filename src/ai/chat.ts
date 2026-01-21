@@ -1,5 +1,5 @@
-import { embed } from "./embedding"
-import { ensureCollection, qdrant } from "./qdrant"
+import { embed } from './embedding'
+import { ensureCollection, qdrant } from './qdrant'
 
 export async function chat(tenant: string, question: string) {
   const collection = `tenant_${tenant}`
