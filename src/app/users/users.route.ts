@@ -1,14 +1,14 @@
 import { BcryptPasswordHasher } from "@/app/auth/adapters/bcrypt-password-hasher.adapter"
 import { errorSchema } from "@/app/common/schemas/error.schema"
 import { OrganizationRepository } from "@/app/organization/repositories/organization.repository"
-import { CreateUser } from "@/app/user/create-user.usecase"
-import { ListUsers } from "@/app/user/list-users.usecase"
-import { UserRepository } from "@/app/user/repositories/user.repository"
-import { userRequestSchema } from "@/app/user/schemas/user-request.schema"
-import { userResponseSchema } from "@/app/user/schemas/user-response.schema"
+import { ListUsers } from "@/app/users/usecases/list-users.usecase"
+import { UserRepository } from "@/app/users/repositories/user.repository"
+import { userRequestSchema } from "@/app/users/schemas/user-request.schema"
+import { userResponseSchema } from "@/app/users/schemas/user-response.schema"
 import { prisma } from "@/lib/prisma"
 import { FastifyTypeInstance } from "@/types"
 import z from "zod"
+import { CreateUser } from "./usecases/create-user.usecase"
 
 const userRepository = new UserRepository(prisma)
 const organizationRepository = new OrganizationRepository(prisma)
@@ -18,6 +18,7 @@ const hasher = new BcryptPasswordHasher()
      app.post(
     '/register',
     {
+      config: { public: true },
       schema: {
         tags: ['users'],
         summary: 'Registrar usuário',
@@ -46,7 +47,6 @@ const hasher = new BcryptPasswordHasher()
   app.get(
     '/users',
     {
-      preHandler: [app.authenticate],
       schema: {
         tags: ['users'],
         summary: 'Listar usuários',

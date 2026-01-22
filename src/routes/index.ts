@@ -1,5 +1,5 @@
-import { authRoutes } from "./auth.route.ts";
-import { usersRoutes } from "./users.route.js";
+import { authRoutes } from "../app/auth/auth.route.ts.js";
+import { usersRoutes } from "../app/users/users.route.js";
 
 export const routes = [
     authRoutes,

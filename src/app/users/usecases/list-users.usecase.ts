@@ -1,7 +1,6 @@
-import { UseCase } from '../common/interfaces/usecase'
-import { OrganizationDto } from '../organization/schemas/organization.schema'
-import { UserRepository } from './repositories/user.repository'
-import { UserResponseDto } from './schemas/user-response.schema'
+import { UseCase } from '../../common/interfaces/usecase'
+import { UserRepository } from '../repositories/user.repository'
+import { UserResponseDto } from '../schemas/user-response.schema'
 
 export class ListUsers implements UseCase<void, UserResponseDto[]> {
   constructor(private readonly userRepository: UserRepository) {}

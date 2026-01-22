@@ -1,17 +1,17 @@
-import { PasswordHasher } from '../common/interfaces/password-hasher'
-import type { UseCase } from '../common/interfaces/usecase'
-import type { OrganizationRepository } from '../organization/repositories/organization.repository'
-import type { UserRepository } from './repositories/user.repository'
-import type { UserDto } from './schemas/user-request.schema'
+import { PasswordHasher } from "@/app/common/interfaces/password-hasher"
+import { UseCase } from "@/app/common/interfaces/usecase"
+import { OrganizationRepository } from "@/app/organization/repositories/organization.repository"
+import { UserRepository } from "../repositories/user.repository"
+import { UserRequestDto } from "../schemas/user-request.schema"
 
-export class CreateUser implements UseCase<UserDto, void> {
+export class CreateUser implements UseCase<UserRequestDto, void> {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly organizationRepository: OrganizationRepository,
     private readonly passwordHasher: PasswordHasher,
   ) {}
 
-  async execute(input: UserDto): Promise<void> {
+  async execute(input: UserRequestDto): Promise<void> {
     const userExists = await this.userRepository.findByEmail(input.email)
     if (userExists) {
       throw new Error('email already used')

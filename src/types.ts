@@ -20,8 +20,9 @@ declare module 'fastify' {
   export interface FastifyRequest {
     jwt: JWT
   }
-  export interface FastifyInstance {
-    authenticate(request: FastifyRequest, reply: FastifyReply): Promise<void>
+  
+  export interface FastifyContextConfig {
+    public?: boolean
   }
 }
 

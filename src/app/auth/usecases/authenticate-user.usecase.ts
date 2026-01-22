@@ -1,9 +1,9 @@
+import { PasswordHasher } from '@/app/common/interfaces/password-hasher'
+import { UseCase } from '@/app/common/interfaces/usecase'
+import { UserRepository } from '@/app/users/repositories/user.repository'
 import { FastifyRequest } from 'fastify/types/request'
-import { PasswordHasher } from '../common/interfaces/password-hasher'
-import type { UseCase } from '../common/interfaces/usecase'
-import { UserRepository } from '../user/repositories/user.repository'
-import type { AuthRequestDto } from './schemas/auth-request.schema'
-import type { AuthResponseDto } from './schemas/auth-response.schema'
+import { AuthRequestDto } from '../schemas/auth-request.schema'
+import { AuthResponseDto } from '../schemas/auth-response.schema'
 
 export class AuthenticateUser
   implements UseCase<AuthRequestDto, AuthResponseDto>

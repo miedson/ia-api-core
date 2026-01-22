@@ -1,12 +1,12 @@
 import { BcryptPasswordHasher } from '@/app/auth/adapters/bcrypt-password-hasher.adapter'
-import { AuthenticateUser } from '@/app/auth/authenticate-user.usecase'
 import { authRequestSchema } from '@/app/auth/schemas/auth-request.schema'
 import { authResponseSchema } from '@/app/auth/schemas/auth-response.schema'
 import { errorSchema } from '@/app/common/schemas/error.schema'
-import { UserRepository } from '@/app/user/repositories/user.repository'
+import { UserRepository } from '@/app/users/repositories/user.repository'
 import { prisma } from '@/lib/prisma'
 import { FastifyTypeInstance } from '@/types'
 import { z } from 'zod'
+import { AuthenticateUser } from './usecases/authenticate-user.usecase'
 
 const userRepository = new UserRepository(prisma)
 const hasher = new BcryptPasswordHasher()
@@ -15,6 +15,7 @@ export async function authRoutes(app: FastifyTypeInstance) {
   app.post(
     '/login',
     {
+      config: { public: true },
       schema: {
         tags: ['auth'],
         summary: 'Autenticar usuário',
