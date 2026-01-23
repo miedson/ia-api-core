@@ -47,5 +47,7 @@ COPY package.json ./
 
 COPY prisma ./prisma
 
+RUN npx prisma migrate deploy
+
 EXPOSE 3000
 CMD ["node", "dist/server.js"]
