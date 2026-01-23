@@ -6,8 +6,6 @@ services:
     image: ia-api-core:latest
     container_name: ia-api
     restart: unless-stopped
-    env_file:
-      - .env
     ports:
       - "3000:3000"
     environment:
@@ -23,9 +21,9 @@ services:
     container_name: api-db
     restart: unless-stopped
     environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
     ports:
       - "5432:5432"
     volumes:
