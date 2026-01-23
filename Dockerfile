@@ -4,10 +4,7 @@
 FROM node:20-alpine AS base
 WORKDIR /app
 
-# Para dependências nativas (ex: onnxruntime, etc)
 RUN apk add --no-cache libc6-compat
-
-# Habilita pnpm via corepack
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # ============================
@@ -31,10 +28,13 @@ RUN pnpm install --frozen-lockfile --prod
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+RUN pnpm exec prisma generate
+
 RUN pnpm exec tsc && pnpm exec tsc-alias
 
 # ============================
-# Runtime (produção)
+# Runtime
 # ============================
 FROM node:20-alpine AS runner
 ENV NODE_ENV=production
@@ -44,6 +44,8 @@ RUN apk add --no-cache libc6-compat
 COPY --from=build /app/dist ./dist
 COPY --from=deps-prod /app/node_modules ./node_modules
 COPY package.json ./
+
+COPY prisma ./prisma
 
 EXPOSE 3000
 CMD ["node", "dist/server.js"]
