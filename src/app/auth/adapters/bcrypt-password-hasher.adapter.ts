@@ -1,14 +1,14 @@
-import { PasswordHasher } from "@/app/common/interfaces/password-hasher";
+import { PasswordHasher } from '@/app/common/interfaces/password-hasher'
 import bcrypt from 'bcrypt'
 
 const SALT_ROUNDS = 12
-const PEPPER = process.env.PASSWORD_PEPPER ?? ""
+const PEPPER = process.env.PASSWORD_PEPPER ?? ''
 
 export class BcryptPasswordHasher implements PasswordHasher {
-    hash(password: string): Promise<string> {
-        return bcrypt.hash(password + PEPPER, SALT_ROUNDS)
-    }
-    compare(password: string, hash: string): Promise<boolean> {
-        return bcrypt.compare(password + PEPPER, hash)
-    }
+  hash(password: string): Promise<string> {
+    return bcrypt.hash(password + PEPPER, SALT_ROUNDS)
+  }
+  compare(password: string, hash: string): Promise<boolean> {
+    return bcrypt.compare(password + PEPPER, hash)
+  }
 }

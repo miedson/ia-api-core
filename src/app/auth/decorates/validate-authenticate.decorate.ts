@@ -5,11 +5,11 @@ export const validateAuthenticateDecorate = async (
   request: FastifyRequest,
   reply: FastifyReply,
 ) => {
-  const idPublic = request.routeOptions.config?.public;
+  const idPublic = request.routeOptions.config?.public
   if (idPublic) return
 
   const token = request.cookies.access_token
-  
+
   if (!token) {
     reply.status(401).send({ message: 'Unauthorized' })
     return

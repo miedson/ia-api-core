@@ -20,7 +20,7 @@ declare module 'fastify' {
   export interface FastifyRequest {
     jwt: JWT
   }
-  
+
   export interface FastifyContextConfig {
     public?: boolean
   }

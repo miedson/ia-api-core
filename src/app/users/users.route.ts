@@ -1,21 +1,21 @@
-import { BcryptPasswordHasher } from "@/app/auth/adapters/bcrypt-password-hasher.adapter"
-import { errorSchema } from "@/app/common/schemas/error.schema"
-import { OrganizationRepository } from "@/app/organization/repositories/organization.repository"
-import { ListUsers } from "@/app/users/usecases/list-users.usecase"
-import { UserRepository } from "@/app/users/repositories/user.repository"
-import { userRequestSchema } from "@/app/users/schemas/user-request.schema"
-import { userResponseSchema } from "@/app/users/schemas/user-response.schema"
-import { prisma } from "@/lib/prisma"
-import { FastifyTypeInstance } from "@/types"
-import z from "zod"
-import { CreateUser } from "./usecases/create-user.usecase"
+import { BcryptPasswordHasher } from '@/app/auth/adapters/bcrypt-password-hasher.adapter'
+import { errorSchema } from '@/app/common/schemas/error.schema'
+import { OrganizationRepository } from '@/app/organization/repositories/organization.repository'
+import { ListUsers } from '@/app/users/usecases/list-users.usecase'
+import { UserRepository } from '@/app/users/repositories/user.repository'
+import { userRequestSchema } from '@/app/users/schemas/user-request.schema'
+import { userResponseSchema } from '@/app/users/schemas/user-response.schema'
+import { prisma } from '@/lib/prisma'
+import { FastifyTypeInstance } from '@/types'
+import z from 'zod'
+import { CreateUser } from './usecases/create-user.usecase'
 
 const userRepository = new UserRepository(prisma)
 const organizationRepository = new OrganizationRepository(prisma)
 const hasher = new BcryptPasswordHasher()
 
- export async function usersRoutes(app: FastifyTypeInstance) {
-     app.post(
+export async function usersRoutes(app: FastifyTypeInstance) {
+  app.post(
     '/register',
     {
       config: { public: true },
@@ -66,4 +66,4 @@ const hasher = new BcryptPasswordHasher()
       }
     },
   )
- }
+}

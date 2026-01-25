@@ -1,8 +1,8 @@
-import { PasswordHasher } from "@/app/common/interfaces/password-hasher"
-import { UseCase } from "@/app/common/interfaces/usecase"
-import { OrganizationRepository } from "@/app/organization/repositories/organization.repository"
-import { UserRepository } from "../repositories/user.repository"
-import { UserRequestDto } from "../schemas/user-request.schema"
+import { PasswordHasher } from '@/app/common/interfaces/password-hasher'
+import { UseCase } from '@/app/common/interfaces/usecase'
+import { OrganizationRepository } from '@/app/organization/repositories/organization.repository'
+import { UserRepository } from '../repositories/user.repository'
+import { UserRequestDto } from '../schemas/user-request.schema'
 
 export class CreateUser implements UseCase<UserRequestDto, void> {
   constructor(

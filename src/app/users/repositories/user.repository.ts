@@ -5,7 +5,9 @@ import {
 } from '../schemas/user-request.schema'
 
 type CreateUserDto = UserRequestDto & { passwordHash: string }
-type UserWithOrganization = Prisma.UserGetPayload<{ include: { organization: true } }>
+type UserWithOrganization = Prisma.UserGetPayload<{
+  include: { organization: true }
+}>
 
 export class UserRepository {
   constructor(private readonly prisma: PrismaClient) {}
