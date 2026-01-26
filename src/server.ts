@@ -12,6 +12,7 @@ import {
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
 import { validateAuthenticateDecorate } from './app/auth/decorates/validate-authenticate.decorate'
+import { errorHandler } from './app/common/error-handler'
 import { routes } from './routes'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
@@ -57,6 +58,8 @@ app.register(ScalarApiReference, {
 app.addHook('preHandler', validateAuthenticateDecorate)
 
 routes.forEach(({ routes, prefix }) => app.register(routes, { prefix }))
+
+app.setErrorHandler(errorHandler)
 
 app
   .listen({

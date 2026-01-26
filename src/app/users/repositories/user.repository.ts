@@ -58,7 +58,7 @@ export class UserRepository {
     tokenHashId: string,
     userId: number,
     passwordUserHash: string,
-  ): Promise<any> {
+  ): Promise<void> {
     await this.prisma.$transaction([
       this.prisma.user.update({
         where: { id: userId },

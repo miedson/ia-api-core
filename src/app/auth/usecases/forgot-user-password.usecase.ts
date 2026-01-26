@@ -1,10 +1,10 @@
-import { UseCase } from '@/app/common/interfaces/usecase'
-import { ForgotPasswordDto } from '../schemas/forgot-password.schema'
-import { UserRepository } from '@/app/users/repositories/user.repository'
 import { MailSender } from '@/app/common/interfaces/email-sender'
 import { TokenHasher } from '@/app/common/interfaces/token-hasher'
+import { UseCase } from '@/app/common/interfaces/usecase'
+import { UserRepository } from '@/app/users/repositories/user.repository'
 import { randomBytes } from 'node:crypto'
 import { PasswordResetTokenRepository } from '../repositorories/password-reset-token.repository'
+import { ForgotPasswordDto } from '../schemas/forgot-password.schema'
 
 export class ForgotUserPassword implements UseCase<ForgotPasswordDto, void> {
   constructor(

@@ -3,7 +3,7 @@ import z from 'zod'
 
 export const organizationSchema = z.object({
   id: z.number().optional().nullable(),
-  publicId: z.string().optional().nullable(),
+  uuid: z.string().optional().nullable(),
   name: z.string(),
   document: z
     .string()

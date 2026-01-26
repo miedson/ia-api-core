@@ -2,7 +2,6 @@ import { PasswordHasher } from '@/app/common/interfaces/password-hasher'
 import { TokenHasher } from '@/app/common/interfaces/token-hasher'
 import { UseCase } from '@/app/common/interfaces/usecase'
 import { UserRepository } from '@/app/users/repositories/user.repository'
-import { passwordSchema } from '@/app/users/schemas/user-request.schema'
 import { PasswordResetTokenRepository } from '../repositorories/password-reset-token.repository'
 import { ResetPasswordDto } from '../schemas/reset-password.schema'
 
