@@ -10,11 +10,22 @@ export const passwordSchema = z
   .regex(/[0-9]/, { error: 'Precisa de número' })
   .regex(/[^A-Za-z0-9]/, { error: 'Precisa de símbolo' })
 
-export const userRequestSchema = z.object({
+export const userSchema = z.object({
   name: z.string().min(1).max(120),
   email: z.email().max(254),
   password: passwordSchema,
   organization: organizationSchema,
 })
 
-export type UserRequestDto = z.infer<typeof userRequestSchema>
+export type UserDto = z.infer<typeof userSchema>
+
+export const userResponseSchema = userSchema.omit({
+  password: true
+}).extend({
+  uuid: z.string(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
+})
+
+export type UserResponseDto = z.infer<typeof userResponseSchema>  
+

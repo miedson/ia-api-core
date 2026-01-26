@@ -1,5 +1,5 @@
-import { passwordSchema } from '@/app/users/schemas/user-request.schema'
 import z from 'zod'
+import { passwordSchema } from '@/app/users/schemas/user.schema'
 
 export const resetPasswordSchema = z.object({
   token: z.string().min(10),

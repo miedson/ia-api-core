@@ -1,10 +1,7 @@
-import { Prisma, PrismaClient, User } from '@/generated/prisma/client'
-import {
-  UserRequestDto,
-  userRequestSchema,
-} from '../schemas/user-request.schema'
+import type { Prisma, PrismaClient, User } from '@/generated/prisma/client'
+import { type UserDto, userSchema } from '../schemas/user.schema'
 
-type CreateUserDto = UserRequestDto & { passwordHash: string }
+type CreateUserDto = UserDto & { passwordHash: string }
 type UserWithOrganization = Prisma.UserGetPayload<{
   include: { organization: true }
 }>
@@ -19,7 +16,7 @@ export class UserRepository {
     organization,
     passwordHash,
   }: CreateUserDto) {
-    const data = userRequestSchema.parse({
+    const data = userSchema.parse({
       name,
       email,
       password,

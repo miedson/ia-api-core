@@ -1,5 +1,5 @@
-import { validateCNPJ, validateCPF } from '@/app/common/helpers'
 import z from 'zod'
+import { validateCNPJ, validateCPF } from '@/app/common/helpers'
 
 export const organizationSchema = z.object({
   id: z.number().optional().nullable(),
@@ -10,6 +10,7 @@ export const organizationSchema = z.object({
     .refine((value) => validateCPF(value) || validateCNPJ(value), {
       message: 'Documento inválido (CPF ou CNPJ)',
     }),
+  slug: z.string(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
 })

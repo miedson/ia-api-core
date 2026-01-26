@@ -1,13 +1,12 @@
+import z from 'zod'
 import { BcryptPasswordHasher } from '@/app/auth/adapters/bcrypt-password-hasher.adapter'
 import { errorSchema } from '@/app/common/schemas/error.schema'
 import { OrganizationRepository } from '@/app/organization/repositories/organization.repository'
-import { ListUsers } from '@/app/users/usecases/list-users.usecase'
 import { UserRepository } from '@/app/users/repositories/user.repository'
-import { userRequestSchema } from '@/app/users/schemas/user-request.schema'
-import { userResponseSchema } from '@/app/users/schemas/user-response.schema'
+import { ListUsers } from '@/app/users/usecases/list-users.usecase'
 import { prisma } from '@/lib/prisma'
-import { FastifyTypeInstance } from '@/types'
-import z from 'zod'
+import type { FastifyTypeInstance } from '@/types'
+import { userResponseSchema, userSchema } from './schemas/user.schema'
 import { CreateUser } from './usecases/create-user.usecase'
 
 const userRepository = new UserRepository(prisma)
@@ -22,7 +21,7 @@ export async function usersRoutes(app: FastifyTypeInstance) {
       schema: {
         tags: ['users'],
         summary: 'Registrar usuário',
-        body: userRequestSchema,
+        body: userSchema,
         response: {
           201: z.undefined().describe('User created'),
           500: errorSchema,
