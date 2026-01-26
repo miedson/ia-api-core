@@ -53,4 +53,23 @@ export class UserRepository {
       include: { organization: true },
     })
   }
+
+  async updatePasswordHash(
+    tokenHashId: string,
+    userId: number,
+    passwordUserHash: string,
+  ): Promise<any> {
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          passwordHash: passwordUserHash,
+        },
+      }),
+      this.prisma.passwordResetToken.update({
+        where: { id: tokenHashId },
+        data: { useAt: new Date() },
+      }),
+    ])
+  }
 }

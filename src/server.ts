@@ -56,7 +56,7 @@ app.register(ScalarApiReference, {
 
 app.addHook('preHandler', validateAuthenticateDecorate)
 
-routes.forEach((route) => app.register(route))
+routes.forEach(({ routes, prefix }) => app.register(routes, { prefix }))
 
 app
   .listen({

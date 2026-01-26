@@ -1,5 +1,6 @@
 import { FastifyJWT } from '@fastify/jwt'
 import { FastifyReply, FastifyRequest } from 'fastify'
+import { unauthorizedSchema } from '../auth.route.ts'
 
 export const validateAuthenticateDecorate = async (
   request: FastifyRequest,
@@ -11,7 +12,7 @@ export const validateAuthenticateDecorate = async (
   const token = request.cookies.access_token
 
   if (!token) {
-    reply.status(401).send({ message: 'Unauthorized' })
+    reply.status(401).send(unauthorizedSchema)
     return
   }
 
