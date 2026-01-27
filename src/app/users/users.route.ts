@@ -6,7 +6,7 @@ import { UserRepository } from '@/app/users/repositories/user.repository'
 import { ListUsers } from '@/app/users/usecases/list-users.usecase'
 import { prisma } from '@/lib/prisma'
 import type { FastifyTypeInstance } from '@/types'
-import { userResponseSchema, userSchema } from './schemas/user.schema'
+import { createUserSchema, userResponseSchema } from './schemas/user.schema'
 import { CreateUser } from './usecases/create-user.usecase'
 
 const userRepository = new UserRepository(prisma)
@@ -21,7 +21,7 @@ export async function usersRoutes(app: FastifyTypeInstance) {
       schema: {
         tags: ['users'],
         summary: 'Registrar usuário',
-        body: userSchema,
+        body: createUserSchema,
         response: {
           201: z.undefined().describe('User created'),
           500: errorSchema,

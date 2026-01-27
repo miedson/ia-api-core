@@ -1,7 +1,6 @@
 import type { Prisma, PrismaClient, User } from '@/generated/prisma/client'
 import { type UserDto, userSchema } from '../schemas/user.schema'
 
-type CreateUserDto = UserDto & { passwordHash: string }
 type UserWithOrganization = Prisma.UserGetPayload<{
   include: { organization: true }
 }>
@@ -9,25 +8,20 @@ type UserWithOrganization = Prisma.UserGetPayload<{
 export class UserRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async create({
-    name,
-    email,
-    password,
-    organization,
-    passwordHash,
-  }: CreateUserDto) {
+  async create({ name, email, password, organization, passwordHash }: UserDto) {
     const data = userSchema.parse({
       name,
       email,
       password,
       organization,
+      passwordHash,
     })
     const user = await this.prisma.user.create({
       data: {
         name: data.name,
         email: data.email,
         passwordHash: passwordHash,
-        organizationId: organization.id!,
+        organizationId: organization.id,
       },
     })
     return user
