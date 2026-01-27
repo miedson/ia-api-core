@@ -1,4 +1,4 @@
+requests
 sentence-transformers
-transformers
 fastapi
 uvicorn
