@@ -12,7 +12,7 @@ export class ListUsers implements UseCase<void, UserResponseDto[]> {
       uuid: user.public_id,
       name: user.name,
       email: user.email,
-      organization: user.organization,
+      organization: { ...user.organization, uuid: user.public_id },
       createdAt: user.created_at?.toISOString(),
       updatedAt: user.updated_at?.toISOString(),
     }))

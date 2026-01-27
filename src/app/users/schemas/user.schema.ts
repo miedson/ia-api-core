@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { organizationSchema } from '@/app/organization/schemas/organization.schema'
+import { organizationResponseSchema } from '@/app/organization/schemas/organization.schema'
 
 export const passwordSchema = z
   .string()
@@ -14,18 +14,19 @@ export const userSchema = z.object({
   name: z.string().min(1).max(120),
   email: z.email().max(254),
   password: passwordSchema,
-  organization: organizationSchema,
+  organization: organizationResponseSchema,
 })
 
 export type UserDto = z.infer<typeof userSchema>
 
-export const userResponseSchema = userSchema.omit({
-  password: true
-}).extend({
-  uuid: z.string(),
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
-})
+export const userResponseSchema = userSchema
+  .omit({
+    password: true,
+  })
+  .extend({
+    uuid: z.string(),
+    createdAt: z.string().optional(),
+    updatedAt: z.string().optional(),
+  })
 
-export type UserResponseDto = z.infer<typeof userResponseSchema>  
-
+export type UserResponseDto = z.infer<typeof userResponseSchema>
