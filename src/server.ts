@@ -57,7 +57,9 @@ app.register(ScalarApiReference, {
 
 app.addHook('preHandler', validateAuthenticateDecorate)
 
-routes.forEach(({ routes, prefix }) => app.register(routes, { prefix }))
+for (const route of routes) {
+  app.register(route.routes, { prefix: route.prefix })
+}
 
 app.setErrorHandler(errorHandler)
 

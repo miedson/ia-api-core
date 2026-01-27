@@ -13,15 +13,18 @@ export class CreateUser implements UseCase<CreateUserDto, void> {
 
   async execute(input: CreateUserDto): Promise<void> {
     const userExists = await this.userRepository.findByEmail(input.email)
+    const organizationExists = await this.organizationRepository.findByDocument(
+      input.organization.document,
+    )
     if (userExists) {
       throw new Error('email already used')
+    }
+    if (organizationExists) {
+      throw new Error('document alredy used')
     }
     const organizationCreated = await this.organizationRepository.create(
       input.organization,
     )
-    if (!organizationCreated) {
-      throw new Error('error when creating organization')
-    }
     const passwordHash = await this.passwordHasher.hash(input.password)
     await this.userRepository.create({
       ...input,

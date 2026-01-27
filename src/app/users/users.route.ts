@@ -9,8 +9,6 @@ import type { FastifyTypeInstance } from '@/types'
 import { createUserSchema, userResponseSchema } from './schemas/user.schema'
 import { CreateUser } from './usecases/create-user.usecase'
 
-const userRepository = new UserRepository(prisma)
-const organizationRepository = new OrganizationRepository(prisma)
 const hasher = new BcryptPasswordHasher()
 
 export async function usersRoutes(app: FastifyTypeInstance) {
@@ -30,12 +28,16 @@ export async function usersRoutes(app: FastifyTypeInstance) {
     },
     async (request, reply) => {
       try {
-        const createUser = new CreateUser(
-          userRepository,
-          organizationRepository,
-          hasher,
-        )
-        await createUser.execute(request.body)
+        await prisma.$transaction(async (transaction) => {
+          const userRepository = new UserRepository(transaction)
+          const organizationRepository = new OrganizationRepository(transaction)
+          const createUser = new CreateUser(
+            userRepository,
+            organizationRepository,
+            hasher,
+          )
+          await createUser.execute(request.body)
+        })
         reply.status(201).send()
       } catch (error) {
         reply.status(500).send({ message: (error as Error).message })
@@ -57,6 +59,7 @@ export async function usersRoutes(app: FastifyTypeInstance) {
     },
     async (_, reply) => {
       try {
+        const userRepository = new UserRepository(prisma)
         const listUsers = new ListUsers(userRepository)
         const users = await listUsers.execute()
         reply.status(200).send(users)

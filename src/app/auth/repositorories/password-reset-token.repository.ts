@@ -1,9 +1,7 @@
-import { PrismaClient } from '@/generated/prisma/client'
 import { addMinutes } from 'date-fns'
+import { Repository } from '@/app/common/interfaces/repository'
 
-export class PasswordResetTokenRepository {
-  constructor(private readonly prisma: PrismaClient) {}
-
+export class PasswordResetTokenRepository extends Repository {
   async create({
     userId,
     tokenHash,
@@ -11,7 +9,7 @@ export class PasswordResetTokenRepository {
     userId: number
     tokenHash: string
   }): Promise<void> {
-    await this.prisma.passwordResetToken.create({
+    await this.dataSource.passwordResetToken.create({
       data: {
         userId,
         tokenHash,
@@ -21,7 +19,7 @@ export class PasswordResetTokenRepository {
   }
 
   async findFirstTokenHash(tokenHash: string) {
-    return await this.prisma.passwordResetToken.findFirst({
+    return await this.dataSource.passwordResetToken.findFirst({
       where: {
         tokenHash,
         expiresAt: {

@@ -1,5 +1,5 @@
-import { MailSender, SendEmailDTO } from '../interfaces/email-sender'
 import { EmailParams, MailerSend, Recipient, Sender } from 'mailersend'
+import type { MailSender, SendEmailDTO } from '../interfaces/email-sender'
 
 export class MailerSendMailSenderAdapter implements MailSender {
   private apiKey: string | null = null
@@ -7,7 +7,6 @@ export class MailerSendMailSenderAdapter implements MailSender {
 
   constructor() {
     const apiKey = process.env['EMAIL_TOKEN']
-    console.log(apiKey)
     const domain = process.env['DOMAIN']
     if (!apiKey || !domain) {
       throw Error('Api key or domain undefined, verify .env')
