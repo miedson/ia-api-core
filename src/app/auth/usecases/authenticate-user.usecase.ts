@@ -1,9 +1,9 @@
-import { PasswordHasher } from '@/app/common/interfaces/password-hasher'
-import { UseCase } from '@/app/common/interfaces/usecase'
-import { UserRepository } from '@/app/users/repositories/user.repository'
-import { FastifyRequest } from 'fastify/types/request'
-import { AuthRequestDto } from '../schemas/auth-request.schema'
-import { AuthResponseDto } from '../schemas/auth-response.schema'
+import type { PasswordHasher } from '@/app/common/interfaces/password-hasher'
+import type { UseCase } from '@/app/common/interfaces/usecase'
+import type { UserRepository } from '@/app/users/repositories/user.repository'
+import type { FastifyRequest } from 'fastify/types/request'
+import type { AuthRequestDto } from '../schemas/auth-request.schema'
+import type { AuthResponseDto } from '../schemas/auth-response.schema'
 
 export class AuthenticateUser
   implements UseCase<AuthRequestDto, AuthResponseDto>
@@ -27,7 +27,7 @@ export class AuthenticateUser
     }
 
     const payload = {
-      sub: existingUser.id,
+      sub: existingUser.public_id,
       email: existingUser.email,
       name: existingUser.name,
     }
