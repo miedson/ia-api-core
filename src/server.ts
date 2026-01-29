@@ -53,6 +53,14 @@ app.register(fastifySwagger, {
 
 app.register(ScalarApiReference, {
   routePrefix: '/docs',
+  hooks: {
+    onRequest: (request, _, done) => {
+      if (process.env?.NODE_ENV === 'development') {
+        request.routeOptions.config.public = true
+      }
+      done()
+    },
+  },
 })
 
 app.addHook('preHandler', validateAuthenticateDecorate)
