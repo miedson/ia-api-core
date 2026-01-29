@@ -1,52 +1,14 @@
 import z from 'zod'
-import { BcryptPasswordHasher } from '@/app/auth/adapters/bcrypt-password-hasher.adapter'
 import { errorSchema } from '@/app/common/schemas/error.schema'
-import { OrganizationRepository } from '@/app/organization/repositories/organization.repository'
 import { UserRepository } from '@/app/users/repositories/user.repository'
 import { ListUsers } from '@/app/users/usecases/list-users.usecase'
 import { prisma } from '@/lib/prisma'
 import type { FastifyTypeInstance } from '@/types'
-import { createUserSchema, userResponseSchema } from './schemas/user.schema'
-import { CreateUser } from './usecases/create-user.usecase'
-
-const hasher = new BcryptPasswordHasher()
+import { userResponseSchema } from './schemas/user.schema'
 
 export async function usersRoutes(app: FastifyTypeInstance) {
-  app.post(
-    '/register',
-    {
-      config: { public: true },
-      schema: {
-        tags: ['users'],
-        summary: 'Registrar usuário',
-        body: createUserSchema,
-        response: {
-          201: z.undefined().describe('User created'),
-          500: errorSchema,
-        },
-      },
-    },
-    async (request, reply) => {
-      try {
-        await prisma.$transaction(async (transaction) => {
-          const userRepository = new UserRepository(transaction)
-          const organizationRepository = new OrganizationRepository(transaction)
-          const createUser = new CreateUser(
-            userRepository,
-            organizationRepository,
-            hasher,
-          )
-          await createUser.execute(request.body)
-        })
-        reply.status(201).send()
-      } catch (error) {
-        reply.status(500).send({ message: (error as Error).message })
-      }
-    },
-  )
-
   app.get(
-    '/users',
+    '',
     {
       schema: {
         tags: ['users'],

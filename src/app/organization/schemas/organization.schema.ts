@@ -8,7 +8,7 @@ export const organizationSchema = z.object({
   document: z
     .string()
     .refine((value) => validateCPF(value) || validateCNPJ(value), {
-      message: 'Documento inválido (CPF ou CNPJ)',
+      message: 'invalid document (CPF ou CNPJ)',
     }),
   slug: z.string(),
   createdAt: z.string().optional(),

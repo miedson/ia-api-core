@@ -5,7 +5,7 @@ export const send = <T extends z.ZodTypeAny>(
   reply: FastifyReply,
   schema: T,
   data: unknown,
-  status = 200
+  status = 200,
 ) => {
-    reply.status(status).send(schema.parse(data))
+  reply.status(status).send(schema.parse(data))
 }

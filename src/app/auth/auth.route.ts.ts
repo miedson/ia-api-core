@@ -14,6 +14,9 @@ import { resetPasswordSchema } from './schemas/reset-password.schema'
 import { AuthenticateUser } from './usecases/authenticate-user.usecase'
 import { ForgotUserPassword } from './usecases/forgot-user-password.usecase'
 import { ResetPassword } from './usecases/reset-password.usecase'
+import { createUserSchema } from '../users/schemas/user.schema'
+import { OrganizationRepository } from '../organization/repositories/organization.repository'
+import { CreateUser } from '../users/usecases/create-user.usecase'
 
 const userRepository = new UserRepository(prisma)
 const passwordResetTokenRepository = new PasswordResetTokenRepository(prisma)
@@ -22,6 +25,38 @@ const mailSender = new MailerSendMailSenderAdapter()
 const tokenHasher = new Sha256TokenHasherAdapater()
 
 export async function authRoutes(app: FastifyTypeInstance) {
+  app.post(
+    '/register',
+    {
+      config: { public: true },
+      schema: {
+        tags: ['auth'],
+        summary: 'Registrar usuário',
+        body: createUserSchema,
+        response: {
+          201: z.undefined().describe('User created'),
+          500: errorSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      try {
+        await prisma.$transaction(async (transaction) => {
+          const userRepository = new UserRepository(transaction)
+          const organizationRepository = new OrganizationRepository(transaction)
+          const createUser = new CreateUser(
+            userRepository,
+            organizationRepository,
+            hasher,
+          )
+          await createUser.execute(request.body)
+        })
+        reply.status(201).send()
+      } catch (error) {
+        reply.status(500).send({ message: (error as Error).message })
+      }
+    },
+  )
   app.post(
     '/login',
     {
