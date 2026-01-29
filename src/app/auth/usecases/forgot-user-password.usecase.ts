@@ -1,10 +1,10 @@
-import { MailSender } from '@/app/common/interfaces/email-sender'
-import { TokenHasher } from '@/app/common/interfaces/token-hasher'
-import { UseCase } from '@/app/common/interfaces/usecase'
-import { UserRepository } from '@/app/users/repositories/user.repository'
 import { randomBytes } from 'node:crypto'
-import { PasswordResetTokenRepository } from '../repositorories/password-reset-token.repository'
-import { ForgotPasswordDto } from '../schemas/forgot-password.schema'
+import type { MailSender } from '@/app/common/interfaces/email-sender'
+import type { TokenHasher } from '@/app/common/interfaces/token-hasher'
+import type { UseCase } from '@/app/common/interfaces/usecase'
+import type { UserRepository } from '@/app/users/repositories/user.repository'
+import type { PasswordResetTokenRepository } from '../repositorories/password-reset-token.repository'
+import type { ForgotPasswordDto } from '../schemas/forgot-password.schema'
 
 export class ForgotUserPassword implements UseCase<ForgotPasswordDto, void> {
   constructor(
@@ -14,8 +14,8 @@ export class ForgotUserPassword implements UseCase<ForgotPasswordDto, void> {
     private readonly passwordResetTokenRepository: PasswordResetTokenRepository,
   ) {}
 
-  async execute(input?: ForgotPasswordDto): Promise<void> {
-    const user = await this.userRepository.findByEmail(input?.email!)
+  async execute(input: ForgotPasswordDto): Promise<void> {
+    const user = await this.userRepository.findByEmail(input.email)
 
     if (user) {
       const { id: userId, name, email } = user

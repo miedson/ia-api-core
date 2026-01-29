@@ -7,6 +7,9 @@ import { UserRepository } from '@/app/users/repositories/user.repository'
 import { prisma } from '@/lib/prisma'
 import type { FastifyTypeInstance } from '@/types'
 import { MailerSendMailSenderAdapter } from '../common/adapters/mailersend-mail-sender.adapter'
+import { OrganizationRepository } from '../organization/repositories/organization.repository'
+import { createUserSchema } from '../users/schemas/user.schema'
+import { CreateUser } from '../users/usecases/create-user.usecase'
 import { Sha256TokenHasherAdapater } from './adapters/sha256-token-hasher.adapter'
 import { PasswordResetTokenRepository } from './repositorories/password-reset-token.repository'
 import { forgotPasswordSchema } from './schemas/forgot-password.schema'
@@ -14,9 +17,6 @@ import { resetPasswordSchema } from './schemas/reset-password.schema'
 import { AuthenticateUser } from './usecases/authenticate-user.usecase'
 import { ForgotUserPassword } from './usecases/forgot-user-password.usecase'
 import { ResetPassword } from './usecases/reset-password.usecase'
-import { createUserSchema } from '../users/schemas/user.schema'
-import { OrganizationRepository } from '../organization/repositories/organization.repository'
-import { CreateUser } from '../users/usecases/create-user.usecase'
 
 const userRepository = new UserRepository(prisma)
 const passwordResetTokenRepository = new PasswordResetTokenRepository(prisma)
@@ -141,13 +141,19 @@ export async function authRoutes(app: FastifyTypeInstance) {
     async (request, reply) => {
       try {
         const { token, password } = request.body
-        const resetPassword = new ResetPassword(
-          tokenHasher,
-          passwordResetTokenRepository,
-          userRepository,
-          hasher,
-        )
-        await resetPassword.execute({ token, password })
+        await prisma.$transaction(async (transaction) => {
+          const userRepository = new UserRepository(transaction)
+          const passwordResetTokenRepository = new PasswordResetTokenRepository(
+            transaction,
+          )
+          const resetPassword = new ResetPassword(
+            tokenHasher,
+            passwordResetTokenRepository,
+            userRepository,
+            hasher,
+          )
+          await resetPassword.execute({ token, password })
+        })
         reply.code(201).send()
       } catch (error) {
         reply.status(500).send({ message: (error as Error).message })
