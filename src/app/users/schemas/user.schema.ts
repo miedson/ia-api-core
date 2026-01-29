@@ -39,9 +39,13 @@ export const userResponseSchema = userSchema
   .omit({
     password: true,
     passwordHash: true,
+    organization: true,
   })
   .extend({
     uuid: z.string(),
+    organization: organizationSchema.omit({
+      id: true,
+    }),
     createdAt: z.string().optional(),
     updatedAt: z.string().optional(),
   })

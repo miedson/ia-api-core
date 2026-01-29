@@ -8,13 +8,16 @@ export class ListUsers implements UseCase<void, UserResponseDto[]> {
   async execute(): Promise<UserResponseDto[]> {
     const users = await this.userRepository.findAll()
 
-    return users.map((user) => ({
-      uuid: user.public_id,
-      name: user.name,
-      email: user.email,
-      organization: { ...user.organization, uuid: user.public_id },
-      createdAt: user.created_at?.toISOString(),
-      updatedAt: user.updated_at?.toISOString(),
-    }))
+    return users.map((user) => {
+      const { id, ...organization } = user.organization
+      return {
+        uuid: user.public_id,
+        name: user.name,
+        email: user.email,
+        organization: { ...organization, uuid: organization.publicId },
+        createdAt: user.created_at?.toISOString(),
+        updatedAt: user.updated_at?.toISOString(),
+      }
+    })
   }
 }
