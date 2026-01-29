@@ -1,11 +1,11 @@
+import { z } from 'zod'
 import { BcryptPasswordHasher } from '@/app/auth/adapters/bcrypt-password-hasher.adapter'
 import { authRequestSchema } from '@/app/auth/schemas/auth-request.schema'
 import { authResponseSchema } from '@/app/auth/schemas/auth-response.schema'
 import { errorSchema } from '@/app/common/schemas/error.schema'
 import { UserRepository } from '@/app/users/repositories/user.repository'
 import { prisma } from '@/lib/prisma'
-import { FastifyTypeInstance } from '@/types'
-import { z } from 'zod'
+import type { FastifyTypeInstance } from '@/types'
 import { MailerSendMailSenderAdapter } from '../common/adapters/mailersend-mail-sender.adapter'
 import { Sha256TokenHasherAdapater } from './adapters/sha256-token-hasher.adapter'
 import { PasswordResetTokenRepository } from './repositorories/password-reset-token.repository'
@@ -21,10 +21,6 @@ const hasher = new BcryptPasswordHasher()
 const mailSender = new MailerSendMailSenderAdapter()
 const tokenHasher = new Sha256TokenHasherAdapater()
 
-export const unauthorizedSchema = z
-  .object({ message: z.string().describe('Unauthorized') })
-  .describe('Unauthorized')
-
 export async function authRoutes(app: FastifyTypeInstance) {
   app.post(
     '/login',
@@ -37,7 +33,6 @@ export async function authRoutes(app: FastifyTypeInstance) {
         response: {
           201: authResponseSchema.describe('Authenticated successfully'),
           500: errorSchema,
-          401: unauthorizedSchema,
         },
       },
     },
@@ -75,7 +70,6 @@ export async function authRoutes(app: FastifyTypeInstance) {
         response: {
           204: z.undefined(),
           500: errorSchema,
-          401: unauthorizedSchema,
         },
       },
     },
@@ -106,7 +100,6 @@ export async function authRoutes(app: FastifyTypeInstance) {
         response: {
           201: z.undefined(),
           500: errorSchema,
-          401: unauthorizedSchema,
         },
       },
     },
