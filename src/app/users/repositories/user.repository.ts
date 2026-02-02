@@ -1,12 +1,14 @@
 import { Repository } from '@/app/common/interfaces/repository'
-import type { Prisma } from '@/generated/prisma/client'
+import type { Prisma, PrismaClient, User } from '@/generated/prisma/client'
 import { type UserDto, userSchema } from '../schemas/user.schema'
 
 type UserWithOrganization = Prisma.UserGetPayload<{
   include: { organization: true }
 }>
 
-export class UserRepository extends Repository {
+export class UserRepository extends Repository<
+  PrismaClient | Prisma.TransactionClient
+> {
   async create({ name, email, password, organization, passwordHash }: UserDto) {
     const data = userSchema.parse({
       name,
@@ -42,6 +44,12 @@ export class UserRepository extends Repository {
   async findAll(): Promise<UserWithOrganization[]> {
     return await this.dataSource.user.findMany({
       include: { organization: true },
+    })
+  }
+
+  async findByUUID(uuid: string): Promise<User | null> {
+    return await this.dataSource.user.findFirst({
+      where: { public_id: uuid },
     })
   }
 

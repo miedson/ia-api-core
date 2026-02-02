@@ -1,10 +1,13 @@
 import { Repository } from '@/app/common/interfaces/repository'
+import type { Prisma, PrismaClient } from '@/generated/prisma/client'
 import {
   type CrateOrganizationDto,
   createOrganizationSchema,
 } from '../schemas/organization.schema'
 
-export class OrganizationRepository extends Repository {
+export class OrganizationRepository extends Repository<
+  PrismaClient | Prisma.TransactionClient
+> {
   async create({ name, document }: CrateOrganizationDto) {
     const data = createOrganizationSchema.parse({ name, document })
     return await this.dataSource.organization.create({

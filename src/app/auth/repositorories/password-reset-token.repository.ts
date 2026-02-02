@@ -1,7 +1,10 @@
 import { addMinutes } from 'date-fns'
 import { Repository } from '@/app/common/interfaces/repository'
+import type { Prisma, PrismaClient } from '@/generated/prisma/client'
 
-export class PasswordResetTokenRepository extends Repository {
+export class PasswordResetTokenRepository extends Repository<
+  PrismaClient | Prisma.TransactionClient
+> {
   async create({
     userId,
     tokenHash,
