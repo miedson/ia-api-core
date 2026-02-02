@@ -52,6 +52,13 @@ services:
       timeout: 5s
       retries: 10
 
+  embedding:
+    build: ./embedding-service
+    container_name: embedding
+    volumes:
+      - hf_cache_dev:/tmp/hf_cache
+    mem_limit: 450m
+
   qdrant:
     image: qdrant/qdrant
     container_name: qdrant-dev
@@ -63,4 +70,5 @@ services:
 volumes:
   postgres_data_dev:
   qdrant_data_dev:
+  hf_cache_dev:
   node_modules:

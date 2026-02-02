@@ -1,5 +1,7 @@
 export async function embed(text: string): Promise<number[]> {
-  const res = await fetch('http://embedding:3001/embed', {
+  const embeddingService = process.env.EMBEDDING_URL ?? ''
+
+  const res = await fetch(embeddingService, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text }),
