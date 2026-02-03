@@ -2,11 +2,11 @@ import type { HttpClient } from '@/app/common/interfaces/http-client'
 import type { UseCase } from '@/app/common/interfaces/usecase'
 import type { CollectionRepository } from '../repositories/collection.repository'
 import type { EmbedRepository } from '../repositories/embed.repository'
-import { createEmbedSchema, type CreateEmbedDto } from '../schemas/embed.schema'
+import { type EmbedDto, embedSchema } from '../schemas/embed.schema'
 
-type CreateEmbedWithUserUuid = CreateEmbedDto & { uuid: string }
+type CreateEmbedWithUserUuid = EmbedDto & { uuid: string }
 
-export class CreateEmbed implements UseCase<CreateEmbedDto, void> {
+export class CreateEmbed implements UseCase<EmbedDto, void> {
   private embeddingServiceUrl: string = process.env?.EMBEDDING_URL ?? ''
 
   constructor(
@@ -16,8 +16,7 @@ export class CreateEmbed implements UseCase<CreateEmbedDto, void> {
   ) {}
 
   async execute({ uuid, ...input }: CreateEmbedWithUserUuid): Promise<void> {
-    const { id, text } = createEmbedSchema.parse({
-      id: input.id,
+    const { text } = embedSchema.parse({
       text: input.text,
     })
 
@@ -29,8 +28,8 @@ export class CreateEmbed implements UseCase<CreateEmbedDto, void> {
     )
 
     if (vector) {
-      await this.collectionRepository.create(uuid)
-      await this.embedRepository.create(id, text, uuid, vector)
+      await this.collectionRepository.create()
+      await this.embedRepository.create(text, uuid, vector)
     }
   }
 }
