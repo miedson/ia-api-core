@@ -1,18 +1,18 @@
-import type { HttpClient } from '@/app/common/interfaces/http-client'
 import type { UseCase } from '@/app/common/interfaces/usecase'
+import type { OrganizationRepository } from '@/app/organization/repositories/organization.repository'
 import type { CollectionRepository } from '../repositories/collection.repository'
 import type { EmbedRepository } from '../repositories/embed.repository'
 import { type EmbedDto, embedSchema } from '../schemas/embed.schema'
+import type { EmbeddingService } from '../services/embedding.service'
 
 type CreateEmbedWithUserUuid = EmbedDto & { uuid: string }
 
 export class CreateEmbed implements UseCase<EmbedDto, void> {
-  private embeddingServiceUrl: string = process.env?.EMBEDDING_URL ?? ''
-
   constructor(
     private readonly embedRepository: EmbedRepository,
     private readonly collectionRepository: CollectionRepository,
-    private readonly httpClient: HttpClient,
+    private readonly organizationRepository: OrganizationRepository,
+    private readonly embeddingService: EmbeddingService,
   ) {}
 
   async execute({ uuid, ...input }: CreateEmbedWithUserUuid): Promise<void> {
@@ -20,16 +20,14 @@ export class CreateEmbed implements UseCase<EmbedDto, void> {
       text: input.text,
     })
 
-    const {
-      data: { vector },
-    } = await this.httpClient.post<{ vector: number[] }>(
-      this.embeddingServiceUrl,
-      { text },
-    )
+    const vector = await this.embeddingService.text(text)
+    const organization = await this.organizationRepository.findByUserUUID(uuid)
 
-    if (vector) {
-      await this.collectionRepository.create()
-      await this.embedRepository.create(text, uuid, vector)
+    if (!organization) {
+      throw new Error('User orgnization not found')
     }
+
+    await this.collectionRepository.create()
+    await this.embedRepository.create(text, organization.publicId, vector)
   }
 }

@@ -1,5 +1,5 @@
-import type { HttpClient } from '@/app/common/interfaces/http-client'
 import type { UseCase } from '@/app/common/interfaces/usecase'
+import type { OrganizationRepository } from '@/app/organization/repositories/organization.repository'
 import type { CollectionRepository } from '../repositories/collection.repository'
 import type { EmbedRepository } from '../repositories/embed.repository'
 import {
@@ -7,6 +7,7 @@ import {
   embedSchema,
   type SearchEmbeddingsResponseDto,
 } from '../schemas/embed.schema'
+import type { EmbeddingService } from '../services/embedding.service'
 
 type EmbeddingsWithUserUUID = EmbedDto & {
   uuid: string
@@ -15,12 +16,11 @@ type EmbeddingsWithUserUUID = EmbedDto & {
 export class SearchEmbeddings
   implements UseCase<EmbeddingsWithUserUUID, SearchEmbeddingsResponseDto[]>
 {
-  private embeddingServiceUrl: string = process.env?.EMBEDDING_URL ?? ''
-
   constructor(
     private readonly collectionRepository: CollectionRepository,
     private readonly embedRepository: EmbedRepository,
-    private readonly httpClient: HttpClient,
+    private readonly organizationRepository: OrganizationRepository,
+    private readonly embeddingService: EmbeddingService,
   ) {}
 
   async execute({
@@ -36,14 +36,17 @@ export class SearchEmbeddings
       throw new Error('collection not found')
     }
 
-    const {
-      data: { vector },
-    } = await this.httpClient.post<{ vector: number[] }>(
-      this.embeddingServiceUrl,
-      { text },
-    )
+    const vector = await this.embeddingService.text(text)
+    const organization = await this.organizationRepository.findByUserUUID(uuid)
 
-    const list = await this.embedRepository.findByVector(uuid, vector)
+    if (!organization) {
+      throw new Error('User orgnization not found')
+    }
+
+    const list = await this.embedRepository.findByVector(
+      organization.publicId,
+      vector,
+    )
 
     return list.map(({ id, vector, payload }) => ({
       id,

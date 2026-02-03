@@ -24,4 +24,14 @@ export class OrganizationRepository extends Repository<
       where: { document },
     })
   }
+
+  async findByUserUUID(uuid: string) {
+    return await this.dataSource.organization.findFirst({
+      where: {
+        users: {
+          some: { public_id: uuid },
+        },
+      },
+    })
+  }
 }
