@@ -7,15 +7,28 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Status {
+  active
+  suspended
+}
+
+enum Roles {
+  agent
+  administrator
+}
+
 model User {
   id                  Int                  @id @default(autoincrement())
   public_id           String               @default(uuid())
   name                String
+  displayName         String?              @map("display_name")
   email               String               @unique
   passwordHash        String               @map("password_hash")
   organizationId      Int                  @map("organization_id")
-  created_at          DateTime             @default(now())
-  updated_at          DateTime             @updatedAt
+  chatwootUserId      Int?                 @map("chatwoot_user_id")
+  role                Roles                @default(agent)
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
   organization        Organization         @relation(fields: [organizationId], references: [id])
   passwordResetTokens PasswordResetToken[]
 
@@ -23,14 +36,18 @@ model User {
 }
 
 model Organization {
-  id         Int      @id @default(autoincrement())
-  publicId   String   @default(uuid()) @map("public_id")
-  name       String
-  document   String   @unique
-  slug       String   @unique
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  users      User[]
+  id                Int      @id @default(autoincrement())
+  publicId          String   @default(uuid()) @map("public_id")
+  name              String
+  document          String   @unique
+  domain            String?
+  supportEmail      String?  @map("support_email")
+  status            Status   @default(active)
+  slug              String   @unique
+  chatwootAccountId Int?     @map("chatwoot_account_id")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  users             User[]
 
   @@map("organizations")
 }

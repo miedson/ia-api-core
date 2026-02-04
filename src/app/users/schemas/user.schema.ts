@@ -15,6 +15,7 @@ export const passwordSchema = z
 
 export const userSchema = z.object({
   name: z.string().min(1).max(120),
+  displayName: z.string().min(1).max(50).optional().nullable(),
   email: z.email().max(254),
   password: passwordSchema,
   passwordHash: z.string(),
@@ -26,6 +27,7 @@ export type UserDto = z.infer<typeof userSchema>
 export const createUserSchema = userSchema
   .pick({
     name: true,
+    displayName: true,
     email: true,
     password: true,
   })
@@ -46,8 +48,8 @@ export const userResponseSchema = userSchema
     organization: organizationSchema.omit({
       id: true,
     }),
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
+    createdAt: z.date().optional(),
+    updatedAt: z.date().optional(),
   })
 
 export type UserResponseDto = z.infer<typeof userResponseSchema>

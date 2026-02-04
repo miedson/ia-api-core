@@ -10,9 +10,12 @@ export const organizationSchema = z.object({
     .refine((value) => validateCPF(value) || validateCNPJ(value), {
       message: 'invalid document (CPF ou CNPJ)',
     }),
+  domain: z.string().optional().nullable(),
+  supportEmail: z.string().optional().nullable(),
+  status: z.enum(['active', 'suspended']).default('active').optional(),
   slug: z.string(),
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 })
 
 export type OrganizationDto = z.infer<typeof organizationSchema>
@@ -20,6 +23,9 @@ export type OrganizationDto = z.infer<typeof organizationSchema>
 export const createOrganizationSchema = organizationSchema.pick({
   name: true,
   document: true,
+  domain: true,
+  supportEmail: true,
+  status: true,
 })
 
-export type CrateOrganizationDto = z.infer<typeof createOrganizationSchema>
+export type CreateOrganizationDto = z.infer<typeof createOrganizationSchema>

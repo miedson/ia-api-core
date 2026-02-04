@@ -3,18 +3,26 @@ import type { UseCase } from '@/app/common/interfaces/usecase'
 import type { OrganizationRepository } from '@/app/organization/repositories/organization.repository'
 import type { UserRepository } from '../repositories/user.repository'
 import type { CreateUserDto } from '../schemas/user.schema'
+import type { ChatwootService } from './services/chatwood.service'
 
 export class CreateUser implements UseCase<CreateUserDto, void> {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly organizationRepository: OrganizationRepository,
     private readonly passwordHasher: PasswordHasher,
+    private readonly chatwootService: ChatwootService,
   ) {}
 
-  async execute(input: CreateUserDto): Promise<void> {
-    const userExists = await this.userRepository.findByEmail(input.email)
+  async execute({
+    name,
+    displayName,
+    email,
+    password,
+    organization,
+  }: CreateUserDto): Promise<void> {
+    const userExists = await this.userRepository.findByEmail(email)
     const organizationExists = await this.organizationRepository.findByDocument(
-      input.organization.document,
+      organization.document,
     )
     if (userExists) {
       throw new Error('email already used')
@@ -22,12 +30,33 @@ export class CreateUser implements UseCase<CreateUserDto, void> {
     if (organizationExists) {
       throw new Error('document alredy used')
     }
-    const organizationCreated = await this.organizationRepository.create(
-      input.organization,
-    )
-    const passwordHash = await this.passwordHasher.hash(input.password)
+
+    const { accountId, userId, role } =
+      await this.chatwootService.provisionAccountWithUser(
+        {
+          name,
+          displayName,
+          email,
+          password,
+          organization,
+        },
+        'administrator',
+      )
+
+    const organizationCreated = await this.organizationRepository.create({
+      ...organization,
+      chatwootAccountId: accountId,
+    })
+
+    const passwordHash = await this.passwordHasher.hash(password)
+
     await this.userRepository.create({
-      ...input,
+      name,
+      displayName,
+      email,
+      password,
+      chatwootUserId: userId,
+      role,
       organization: {
         ...organizationCreated,
         uuid: organizationCreated.publicId,

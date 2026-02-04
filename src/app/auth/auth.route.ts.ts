@@ -17,12 +17,16 @@ import { resetPasswordSchema } from './schemas/reset-password.schema'
 import { AuthenticateUser } from './usecases/authenticate-user.usecase'
 import { ForgotUserPassword } from './usecases/forgot-user-password.usecase'
 import { ResetPassword } from './usecases/reset-password.usecase'
+import { ChatwootService } from '../users/usecases/services/chatwood.service'
+import { FetchHttpClientAdapter } from '../common/adapters/fetch-httpclient.adapter'
 
 const userRepository = new UserRepository(prisma)
 const passwordResetTokenRepository = new PasswordResetTokenRepository(prisma)
 const hasher = new BcryptPasswordHasher()
 const mailSender = new MailerSendMailSenderAdapter()
 const tokenHasher = new Sha256TokenHasherAdapater()
+const fetchHttpClientAdapter = new FetchHttpClientAdapter()
+const chatwootService = new ChatwootService(fetchHttpClientAdapter)
 
 export async function authRoutes(app: FastifyTypeInstance) {
   app.post(
@@ -41,6 +45,7 @@ export async function authRoutes(app: FastifyTypeInstance) {
     },
     async (request, reply) => {
       try {
+        const data = request.body
         await prisma.$transaction(async (transaction) => {
           const userRepository = new UserRepository(transaction)
           const organizationRepository = new OrganizationRepository(transaction)
@@ -48,8 +53,19 @@ export async function authRoutes(app: FastifyTypeInstance) {
             userRepository,
             organizationRepository,
             hasher,
+            chatwootService,
           )
-          await createUser.execute(request.body)
+
+          await createUser.execute({
+            ...data,
+            organization: {
+              ...data.organization,
+              domain: data.organization.domain ?? process.env.DOMAIN,
+              supportEmail:
+                data.organization.supportEmail ??
+                process.env.SUPPORT_EMAIL_DEFAULT,
+            },
+          })
         })
         reply.status(201).send()
       } catch (error) {

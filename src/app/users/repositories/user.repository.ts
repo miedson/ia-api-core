@@ -1,6 +1,16 @@
 import { Repository } from '@/app/common/interfaces/repository'
-import type { Prisma, PrismaClient, User } from '@/generated/prisma/client'
-import { type UserDto, userSchema } from '../schemas/user.schema'
+import type {
+  Prisma,
+  PrismaClient,
+  Roles,
+  User,
+} from '@/generated/prisma/client'
+import type { UserDto } from '../schemas/user.schema'
+
+type CreateUserWithChatWootUserId = UserDto & {
+  chatwootUserId: number
+  role: Roles
+}
 
 type UserWithOrganization = Prisma.UserGetPayload<{
   include: { organization: true }
@@ -9,22 +19,27 @@ type UserWithOrganization = Prisma.UserGetPayload<{
 export class UserRepository extends Repository<
   PrismaClient | Prisma.TransactionClient
 > {
-  async create({ name, email, password, organization, passwordHash }: UserDto) {
-    const data = userSchema.parse({
-      name,
-      email,
-      password,
-      organization,
-      passwordHash,
-    })
+  async create({
+    name,
+    displayName,
+    email,
+    passwordHash,
+    organization: { id: organizationId },
+    chatwootUserId,
+    role,
+  }: CreateUserWithChatWootUserId) {
     const user = await this.dataSource.user.create({
       data: {
-        name: data.name,
-        email: data.email,
-        passwordHash: passwordHash,
-        organizationId: organization.id,
+        name,
+        displayName,
+        email,
+        passwordHash,
+        organizationId,
+        chatwootUserId,
+        role,
       },
     })
+
     return user
   }
 
