@@ -9,7 +9,7 @@ import type { FastifyTypeInstance } from '@/types'
 import { MailerSendMailSenderAdapter } from '../common/adapters/mailersend-mail-sender.adapter'
 import { OrganizationRepository } from '../organization/repositories/organization.repository'
 import { createUserSchema } from '../users/schemas/user.schema'
-import { CreateUser } from '../users/usecases/create-user.usecase'
+import { CreateAccount } from '../users/usecases/create-account.usecase'
 import { Sha256TokenHasherAdapater } from './adapters/sha256-token-hasher.adapter'
 import { PasswordResetTokenRepository } from './repositorories/password-reset-token.repository'
 import { forgotPasswordSchema } from './schemas/forgot-password.schema'
@@ -35,7 +35,7 @@ export async function authRoutes(app: FastifyTypeInstance) {
       config: { public: true },
       schema: {
         tags: ['auth'],
-        summary: 'Registrar usuário',
+        summary: 'Criar conta',
         body: createUserSchema,
         response: {
           201: z.undefined().describe('User created'),
@@ -49,14 +49,15 @@ export async function authRoutes(app: FastifyTypeInstance) {
         await prisma.$transaction(async (transaction) => {
           const userRepository = new UserRepository(transaction)
           const organizationRepository = new OrganizationRepository(transaction)
-          const createUser = new CreateUser(
+          const createAccount = new CreateAccount(
             userRepository,
             organizationRepository,
             hasher,
             chatwootService,
+            request.log,
           )
 
-          await createUser.execute({
+          await createAccount.execute({
             ...data,
             organization: {
               ...data.organization,

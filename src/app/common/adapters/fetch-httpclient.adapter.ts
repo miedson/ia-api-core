@@ -1,71 +1,80 @@
-import type { HttpClient, HttpResponse } from '../interfaces/http-client'
+import type {
+  HttpClient,
+  HttpRequest,
+  HttpResponse,
+} from '../interfaces/http-client'
+
+type Method = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 export class FetchHttpClientAdapter implements HttpClient {
-  async get<TResponse = unknown>(
+  private defaultHeaders = {
+    'Content-Type': 'application/json',
+  }
+
+  private async request<TResponse, TBody = unknown>(
+    method: Method,
     url: string,
+    body?: TBody,
+    options?: Omit<HttpRequest<TBody>, 'url' | 'method' | 'body'>,
   ): Promise<HttpResponse<TResponse>> {
     const response = await fetch(url, {
-      method: 'GET',
+      method,
+      body: body ? JSON.stringify(body) : undefined,
+      ...options,
       headers: {
-        'Content-Type': 'application/json',
+        ...this.defaultHeaders,
+        ...options?.headers,
       },
     })
 
+    const contentType = response.headers.get('content-type')
+    const isJson = contentType?.includes('application/json')
+
+    const responseBody = isJson ? await response.json() : await response.text()
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP ${response.status} - ${
+          typeof responseBody === 'string'
+            ? responseBody
+            : JSON.stringify(responseBody)
+        }`,
+      )
+    }
+
     return {
-      data: (await response.json()) as TResponse,
+      data: responseBody as TResponse,
       status: response.status,
     }
   }
 
-  async post<TResponse = unknown, TBody = unknown>(
+  get<TResponse = unknown>(
+    url: string,
+    options?: Omit<HttpRequest, 'url' | 'method' | 'body'>,
+  ) {
+    return this.request<TResponse>('GET', url, undefined, options)
+  }
+
+  post<TResponse = unknown, TBody = unknown>(
     url: string,
     body: TBody,
-  ): Promise<HttpResponse<TResponse>> {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-
-    return {
-      data: (await response.json()) as TResponse,
-      status: response.status,
-    }
+    options?: Omit<HttpRequest<TBody>, 'url' | 'method' | 'body'>,
+  ) {
+    return this.request<TResponse, TBody>('POST', url, body, options)
   }
 
-  async put<TResponse = unknown, TBody = unknown>(
+  put<TResponse = unknown, TBody = unknown>(
     url: string,
     body: TBody,
-  ): Promise<HttpResponse<TResponse>> {
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-
-    return {
-      data: (await response.json()) as TResponse,
-      status: response.status,
-    }
+    options?: Omit<HttpRequest<TBody>, 'url' | 'method' | 'body'>,
+  ) {
+    return this.request<TResponse, TBody>('PUT', url, body, options)
   }
 
-  async delete<TResponse = unknown>(
+  delete<TResponse = unknown>(
     url: string,
-  ): Promise<HttpResponse<TResponse>> {
-    const response = await fetch(url, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-
-    return {
-      data: (await response.json()) as TResponse,
-      status: response.status,
-    }
+    options?: Omit<HttpRequest, 'url' | 'method' | 'body'>,
+  ) {
+    return this.request<TResponse>('DELETE', url, undefined, options)
   }
 }

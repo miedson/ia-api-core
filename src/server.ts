@@ -15,7 +15,22 @@ import { validateAuthenticateDecorate } from './app/auth/decorates/validate-auth
 import { errorHandler } from './app/common/error-handler'
 import { routes } from './routes'
 
-const app = fastify().withTypeProvider<ZodTypeProvider>()
+const app = fastify({
+  logger: {
+    level: process.env.LOG_LEVEL ?? 'info',
+    transport:
+      process.env.NODE_ENV === 'development'
+        ? {
+            target: 'pino-pretty',
+            options: {
+              translateTime: 'SYS:standard',
+              colorize: true,
+              ignore: 'pid,hostname',
+            },
+          }
+        : undefined,
+  },
+}).withTypeProvider<ZodTypeProvider>()
 
 app.setValidatorCompiler(validatorCompiler)
 app.setSerializerCompiler(serializerCompiler)

@@ -4,13 +4,15 @@ import type { OrganizationRepository } from '@/app/organization/repositories/org
 import type { UserRepository } from '../repositories/user.repository'
 import type { CreateUserDto } from '../schemas/user.schema'
 import type { ChatwootService } from './services/chatwood.service'
+import type { FastifyBaseLogger } from 'fastify/types/logger'
 
-export class CreateUser implements UseCase<CreateUserDto, void> {
+export class CreateAccount implements UseCase<CreateUserDto, void> {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly organizationRepository: OrganizationRepository,
     private readonly passwordHasher: PasswordHasher,
     private readonly chatwootService: ChatwootService,
+    private readonly logger: FastifyBaseLogger,
   ) {}
 
   async execute({
@@ -20,6 +22,9 @@ export class CreateUser implements UseCase<CreateUserDto, void> {
     password,
     organization,
   }: CreateUserDto): Promise<void> {
+    this.logger.info(
+      `start create user account: ${JSON.stringify({ name, displayName, email, password, organization })}`,
+    )
     const userExists = await this.userRepository.findByEmail(email)
     const organizationExists = await this.organizationRepository.findByDocument(
       organization.document,
@@ -31,6 +36,7 @@ export class CreateUser implements UseCase<CreateUserDto, void> {
       throw new Error('document alredy used')
     }
 
+    this.logger.info(`call chatwoot service`)
     const { accountId, userId, role } =
       await this.chatwootService.provisionAccountWithUser(
         {
@@ -40,8 +46,12 @@ export class CreateUser implements UseCase<CreateUserDto, void> {
           password,
           organization,
         },
-        'administrator',
+        'agent',
       )
+
+    this.logger.info(
+      `account and user created in chatwoot: ${JSON.stringify({ accountId, userId, role })}`,
+    )
 
     const organizationCreated = await this.organizationRepository.create({
       ...organization,
@@ -63,5 +73,7 @@ export class CreateUser implements UseCase<CreateUserDto, void> {
       },
       passwordHash,
     })
+
+    this.logger.info(`finished create user account`)
   }
 }

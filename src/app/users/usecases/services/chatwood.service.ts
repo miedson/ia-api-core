@@ -13,7 +13,6 @@ export class ChatwootService {
   private apiUrl = process.env.CHATWOOT_API_URL ?? ''
   private apiKey = process.env.CHATWOOT_API_TOKEN ?? ''
   private headers = {
-    'Content-Type': 'application/json',
     api_access_token: this.apiKey,
   }
 
@@ -60,10 +59,7 @@ export class ChatwootService {
         custom_attributes: {},
       },
       {
-        headers: {
-          'Content-Type': 'application/json',
-          api_access_token: this.apiKey,
-        },
+        headers: this.headers,
       },
     )
 
