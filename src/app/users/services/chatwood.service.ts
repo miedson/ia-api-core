@@ -1,7 +1,7 @@
 import type { HttpClient } from '@/app/common/interfaces/http-client'
 import type { CreateOrganizationDto } from '@/app/organization/schemas/organization.schema'
 import type { Roles } from '@/generated/prisma/enums'
-import type { CreateUserDto } from '../../schemas/user.schema'
+import type { CreateAccountDto } from '../schemas/user.schema'
 
 type AttachUserAccountDto = {
   accountId: number
@@ -48,7 +48,7 @@ export class ChatwootService {
     displayName,
     email,
     password,
-  }: Omit<CreateUserDto, 'organization'>) {
+  }: Omit<CreateAccountDto, 'organization'>) {
     const { data } = await this.httpClient.post<{ id: number }>(
       `${this.apiUrl}/users`,
       {
@@ -76,7 +76,7 @@ export class ChatwootService {
     )
   }
 
-  async provisionAccountWithUser(user: CreateUserDto, role: Roles) {
+  async provisionAccountWithUser(user: CreateAccountDto, role: Roles) {
     const { accountId } = await this.createAccount(user.organization)
     const { userId } = await this.createUser(user)
 

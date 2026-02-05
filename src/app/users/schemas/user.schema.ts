@@ -3,6 +3,7 @@ import {
   createOrganizationSchema,
   organizationSchema,
 } from '@/app/organization/schemas/organization.schema'
+import { Roles } from '@/generated/prisma/enums'
 
 export const passwordSchema = z
   .string()
@@ -20,11 +21,15 @@ export const userSchema = z.object({
   password: passwordSchema,
   passwordHash: z.string(),
   organization: organizationSchema,
+  role: z.enum(Roles),
 })
 
 export type UserDto = z.infer<typeof userSchema>
 
-export const createUserSchema = userSchema
+export const createAccountSchema = userSchema
+  .omit({
+    role: true,
+  })
   .pick({
     name: true,
     displayName: true,
@@ -33,6 +38,20 @@ export const createUserSchema = userSchema
   })
   .extend({
     organization: createOrganizationSchema,
+  })
+
+export type CreateAccountDto = z.infer<typeof createAccountSchema>
+
+export const createUserSchema = userSchema
+  .pick({
+    name: true,
+    displayName: true,
+    email: true,
+    password: true,
+    role: true,
+  })
+  .extend({
+    organizationId: z.number(),
   })
 
 export type CreateUserDto = z.infer<typeof createUserSchema>

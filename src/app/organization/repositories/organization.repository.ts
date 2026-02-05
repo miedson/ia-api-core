@@ -41,6 +41,14 @@ export class OrganizationRepository extends Repository<
     })
   }
 
+  async findById(id: number) {
+    return await this.dataSource.organization.findFirst({
+      where: {
+        id,
+      },
+    })
+  }
+
   async findByUserUUID(uuid: string) {
     return await this.dataSource.organization.findFirst({
       where: {

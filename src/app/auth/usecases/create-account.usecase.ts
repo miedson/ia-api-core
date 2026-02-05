@@ -1,12 +1,12 @@
 import type { PasswordHasher } from '@/app/common/interfaces/password-hasher'
 import type { UseCase } from '@/app/common/interfaces/usecase'
 import type { OrganizationRepository } from '@/app/organization/repositories/organization.repository'
-import type { UserRepository } from '../repositories/user.repository'
-import type { CreateUserDto } from '../schemas/user.schema'
-import type { ChatwootService } from './services/chatwood.service'
 import type { FastifyBaseLogger } from 'fastify/types/logger'
+import type { UserRepository } from '../../users/repositories/user.repository'
+import type { CreateAccountDto } from '../../users/schemas/user.schema'
+import type { ChatwootService } from '../../users/services/chatwood.service'
 
-export class CreateAccount implements UseCase<CreateUserDto, void> {
+export class CreateAccount implements UseCase<CreateAccountDto, void> {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly organizationRepository: OrganizationRepository,
@@ -21,7 +21,7 @@ export class CreateAccount implements UseCase<CreateUserDto, void> {
     email,
     password,
     organization,
-  }: CreateUserDto): Promise<void> {
+  }: CreateAccountDto): Promise<void> {
     this.logger.info(
       `start create user account: ${JSON.stringify({ name, displayName, email, password, organization })}`,
     )
@@ -46,7 +46,7 @@ export class CreateAccount implements UseCase<CreateUserDto, void> {
           password,
           organization,
         },
-        'agent',
+        'administrator',
       )
 
     this.logger.info(

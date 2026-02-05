@@ -1,4 +1,3 @@
-import { z } from 'zod'
 import { BcryptPasswordHasher } from '@/app/auth/adapters/bcrypt-password-hasher.adapter'
 import { authRequestSchema } from '@/app/auth/schemas/auth-request.schema'
 import { authResponseSchema } from '@/app/auth/schemas/auth-response.schema'
@@ -6,19 +5,20 @@ import { errorSchema } from '@/app/common/schemas/error.schema'
 import { UserRepository } from '@/app/users/repositories/user.repository'
 import { prisma } from '@/lib/prisma'
 import type { FastifyTypeInstance } from '@/types'
+import { z } from 'zod'
+import { FetchHttpClientAdapter } from '../common/adapters/fetch-httpclient.adapter'
 import { MailerSendMailSenderAdapter } from '../common/adapters/mailersend-mail-sender.adapter'
 import { OrganizationRepository } from '../organization/repositories/organization.repository'
-import { createUserSchema } from '../users/schemas/user.schema'
-import { CreateAccount } from '../users/usecases/create-account.usecase'
+import { createAccountSchema } from '../users/schemas/user.schema'
+import { ChatwootService } from '../users/services/chatwood.service'
 import { Sha256TokenHasherAdapater } from './adapters/sha256-token-hasher.adapter'
 import { PasswordResetTokenRepository } from './repositorories/password-reset-token.repository'
 import { forgotPasswordSchema } from './schemas/forgot-password.schema'
 import { resetPasswordSchema } from './schemas/reset-password.schema'
 import { AuthenticateUser } from './usecases/authenticate-user.usecase'
+import { CreateAccount } from './usecases/create-account.usecase'
 import { ForgotUserPassword } from './usecases/forgot-user-password.usecase'
 import { ResetPassword } from './usecases/reset-password.usecase'
-import { ChatwootService } from '../users/usecases/services/chatwood.service'
-import { FetchHttpClientAdapter } from '../common/adapters/fetch-httpclient.adapter'
 
 const userRepository = new UserRepository(prisma)
 const passwordResetTokenRepository = new PasswordResetTokenRepository(prisma)
@@ -36,7 +36,7 @@ export async function authRoutes(app: FastifyTypeInstance) {
       schema: {
         tags: ['auth'],
         summary: 'Criar conta',
-        body: createUserSchema,
+        body: createAccountSchema,
         response: {
           201: z.undefined().describe('User created'),
           500: errorSchema,
